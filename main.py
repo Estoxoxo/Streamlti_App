@@ -37,7 +37,6 @@ def show_home():
     )
 
     # Define the path to the images
-    Images/BigQuery_icon.png
     bigquery_image_path = 'Images/BigQuery_icon.png'
     cloudstorage_image_path = 'Images/GCP_ICON.png'
     
