@@ -1,87 +1,127 @@
 import streamlit as st
-from cloud_storage_page import cloud_storage
-from BigQuery import BigQuery
-from Jira import Jira
-import pandas as pd
 import os
-from PIL import Image, ImageOps
+from datetime import datetime
+from PIL import ImageGrab
+import streamlit as st
+from utils import *
+from Case1 import case1
+from Case2 import case2
+from Case3 import case3
+from Case4 import case4
+from Case5 import case5
+from Case6 import case6
+from Case7 import case7
+from Case8 import case8
+from Case9 import case9
+from Case10 import case10
+from Case11 import case11
+from Case12 import case12
+from Case13 import case13
+from utils import *
 
-# Definir primero la función show_home
-def show_home():
-    st.subheader("SBO CASES:")
+# Importa los demás casos según sea necesario
 
-    # Adding CSS styles
-    st.markdown(
-        """
-        <style>
-        .image-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background-color: #e0e0e0;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .image-container img {
-            width: 250px;
-            height: 250px;
-            object-fit: cover;
-            background-color: white;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #d3d3d3;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
 
-    # Define the path to the images
-    bigquery_image_path = 'Images/BigQuery_icon.png'
-    cloudstorage_image_path = 'Images/GCP_ICON.png'
+# Función para manejar el refresco de la aplicación
+def finalize_app():
+    # Limpiar todos los elementos en session_state
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
     
-    # Load and resize images to ensure they have the same dimensions
-    try:
-        bigquery_image = Image.open(bigquery_image_path)
-        cloudstorage_image = Image.open(cloudstorage_image_path)
+    # Limpiar caché de Streamlit
+    st.cache_data.clear()
+    st.cache_resource.clear()
+
+def cloud_storage():
+    
+     # Llamada a la página de CloudStorage
+    # Configuración inicial
+    #st.set_page_config(page_title="DataFrame Operations", layout="wide")
+
+    # Sistema de navegación
+    menu = st.sidebar.selectbox("Selecciona una opción", ["Inicio", "Caso 1", "Caso 2", "Caso 3", "Caso 4", "Caso 5", "Caso 6", "Caso 7", "Caso 8", "Caso 9", "Caso 10", "Caso 11", "Caso 12"])
+    
+    if st.sidebar.button("Finalizar Aplicación"):
+        finalize_app()
+
+    # Página de inicio: Cargar archivo y filtrar columnas
+    if menu == "Inicio":
+        st.title("Bienvenido a la aplicación de operaciones con DataFrames")
+
+        st.session_state.file_uploader = st.file_uploader("Sube un archivo de datos (CSV, Parquet, JSON, Excel):")
+
+        if st.session_state.file_uploader is not None:
+            st.session_state.df_load = load_file_to_dataframe(st.session_state.file_uploader)
+            
+            if st.session_state.df_load is not None:
+                st.write("DataFrame cargado:")
+                st.dataframe(st.session_state.df_load)
+
+                st.text_area("Ingresa los nombres de las columnas a conservar, separadas por comas:", key="column_list_input")
+                if st.session_state.column_list_input:
+                    selected_columns = [col.strip() for col in st.session_state.column_list_input.split(",")]
+                    st.session_state.df_filtered = st.session_state.df_load[selected_columns]
+                    st.write("DataFrame después de filtrar columnas:")
+                    st.dataframe(st.session_state.df_filtered)
+
+    # Navegación a los casos
+    elif menu == "Caso 1":
+        case1()
+
+    elif menu == "Caso 2":
+        case2()
+
+    elif menu == "Caso 3":
+        case3()
+    
+    elif menu == "Caso 4":
+        case4()
+    
+    elif menu == "Caso 5":
+        case5()
+    
+    elif menu == "Caso 6":
+        case6()
+    
+    
+    elif menu == "Caso 7":
+        case7()
+
+    elif menu == "Caso 8":
+        case8()
         
-        # Resize images to the same size using LANCZOS filter
-        bigquery_image = ImageOps.fit(bigquery_image, (250, 250), Image.Resampling.LANCZOS)
-        cloudstorage_image = ImageOps.fit(cloudstorage_image, (250, 250), Image.Resampling.LANCZOS)
-   
-    except FileNotFoundError:
-        st.error("Error: No se encontraron las imágenes. Verifica las rutas y la ubicación de las imágenes.")
-        return
+    elif menu == "Caso 9":
+       case9()
+       
+    elif menu == "Caso 10":
+        case10()
+    
+    elif menu == "Caso 11":
+        case11()
+    
+    elif menu == "Caso 12":
+        case12()
+    
+    elif menu == "Caso 13":
+        case13()
+    # Continúa con el resto de los casos
+    # ...
 
-    # Create a container for the images and buttons
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.image(bigquery_image, use_column_width=False)
-        if st.button("Ir a BigQuery Cases"):
-            st.session_state.page = "BigQuery Cases"
-    
-    with col2:
-        st.image(cloudstorage_image, use_column_width=False)
-        if st.button("Ir a Cloud Storage Cases"):
-            st.session_state.page = "Cloud Storage Cases"
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+# Función para cargar archivo
+def load_file_to_dataframe(file):
+    extension = file.name.split('.')[-1].lower()
+    if extension == 'csv':
+        return pd.read_csv(file)
+    elif extension == 'parquet':
+        return pd.read_parquet(file)
+    elif extension == 'xlsx' or extension == 'xls':
+        return pd.read_excel(file)
+    elif extension == 'json':
+        return pd.read_json(file)
+    else:
+        st.error("Formato de archivo no soportado.")
+        return None
 
-def main():
-    st.title("Manejo de Archivos y Datos")
-   
-    # Inicialmente mostrar la pantalla principal
-    if "page" not in st.session_state:
-        st.session_state.page = "Home"
-    
-    if st.session_state.page == "Home":
-        show_home()
-    elif st.session_state.page == "BigQuery Cases":
-        BigQuery()
-    elif st.session_state.page == "Cloud Storage Cases":
-        cloud_storage()
-
-# Ejecutar la función principal
+# Llamada a la función principal
 if __name__ == "__main__":
-    main()
+    cloud_storage()
