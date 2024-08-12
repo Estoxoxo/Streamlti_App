@@ -37,8 +37,9 @@ def show_home():
     )
 
     # Define the path to the images
-    bigquery_image_path = '/Users/esteban.jimenez/Streamlti_App/Images/BigQuery_icon.png'
-    cloudstorage_image_path = '/Users/esteban.jimenez/Streamlti_App/Images/GCP_ICON.png'
+    Images/BigQuery_icon.png
+    bigquery_image_path = 'Images/BigQuery_icon.png'
+    cloudstorage_image_path = 'Images/GCP_ICON.png'
     
     # Load and resize images to ensure they have the same dimensions
     try:
