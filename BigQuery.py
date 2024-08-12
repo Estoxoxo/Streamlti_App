@@ -1,0 +1,1 @@
+import streamlit as stdef BigQuery():    st.title("Big Query")    st.write("This is the Big Query page.")

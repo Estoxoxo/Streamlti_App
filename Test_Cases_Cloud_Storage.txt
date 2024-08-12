@@ -1,0 +1,167 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue-BoldItalic;\f1\fnil\fcharset0 HelveticaNeue;\f2\fnil\fcharset0 HelveticaNeue-Bold;
+\f3\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red18\green31\blue60;\red255\green255\blue255;\red14\green76\blue221;
+}
+{\*\expandedcolortbl;;\cssrgb\c9020\c16863\c30196;\cssrgb\c100000\c100000\c100000;\cssrgb\c4706\c40000\c89412;
+}
+\margl1440\margr1440\vieww28600\viewh15400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\i\b\fs28 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb3 \expnd0\expndtw0\kerning0
+Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 1-) En el que se valida que el DAG 
+\f2\b \AppleTypeServices\AppleTypeServicesF65539 Hist\'f3rico: {\field{\*\fldinst{HYPERLINK "https://45ff65572b5a470a832c6261dec8dba9-dot-us-east1.composer.googleusercontent.com/dags/historic_s3_giftcards_daptpx_no_conciliadas/grid?"}}{\fldrslt \cf4 historic_s3_giftcards_daptpx_no_conciliadas}}
+\f1\b0 \AppleTypeServices\AppleTypeServicesF65539  se ejecute exitosamente para el proceso hist\'f3rico.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\
+\
+\
+;\
+\
+\
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 2-) En el que se valida que los datos se carguen a la tabla cuando la nomenclatura de los archivos es correcta para el proceso hist\'f3rico.\cb1 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3     1- Existen datos en la tabla:\cb1 \
+\
+\
+    2-\cb3 Se insertan  nuevos datos;\
+\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 3-) En el que se valida que se carguen los registros en la tabla donde el nombre de los \cf2 \ul \ulc2 campos est\'e1n en MAYUSCULA\cf2 \ulnone  para el proceso hist\'f3rico.\
+\cb1 \
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 1-). Se crea un archivo con los campos en mayusculas:\cb1 \
+\cb3 \'a0\
+2-) Se insertan 30 nuevos datos:\
+\
+\
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 4-) En el que se valida extra_fields no tenga datos parseados\cb1 \
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 \
+;\
+\
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 5-) En el que se valida que se agreguen a la tabla registros con informaci\'f3n faltante en una o mas columnas y el resto de registros si se cargue para el proceso hist\'f3rico.\cb1 \
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 1-) Se crea un archivo con informaci\'f3n faltante:\cb1 \
+\cb3 \
+2-) Existe en la tabla:;\
+\
+\
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 6-) En el que se valida que no se agreguen a la tabla registros donde existen \cf2 \ul \ulc2 menos campos\cf2 \ulnone  para el proceso hist\'f3rico.\cb1 \
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 1-) Se crea un archivo con menos campos:\cb1 \
+\cb3 \
+2-)Este no se agrega a la tabla\
+;\
+\
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 7-) En el que se valida que no se agreguen a la tabla registros donde la nomenclatura de los archivos es 
+\f2\b \AppleTypeServices\AppleTypeServicesF65539 incorrecta 
+\f1\b0 \AppleTypeServices\AppleTypeServicesF65539 para el proceso hist\'f3rico.\cb1 \
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validacion\
+
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 1-) Se crea un archivo con la nomenclatura incorrecta:\cb1 \
+\cb3 \
+2-) Este no se agrega a la tabla:\
+\
+;\
+\
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 8-) En el que se valida que el total de registros entre la capa 
+\f2\b \AppleTypeServices\AppleTypeServicesF65539 LANDING
+\f1\b0 \AppleTypeServices\AppleTypeServicesF65539  y la capa 
+\f2\b \AppleTypeServices\AppleTypeServicesF65539 RAW
+\f1\b0 \AppleTypeServices\AppleTypeServicesF65539  sea el mismo para el proceso hist\'f3rico.\cb1 \
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 1- Existen  \'93\'94  datos en la tabla:\
+\
+\
+2-) Se insertan \'93\'94 nuevos datos:\cb1 \
+\cb3 \
+\pard\pardeftab720\partightenfactor0
+\cf2 ;\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 9-) En el que se valide que existen y se ingresan datos con \'d1 o caracteres especiales\cb1 \
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cb3 Validacion
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \
+;\
+\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 10-)En el que se valida que se genere la tabla en Big Query en la capa 
+\f2\b \AppleTypeServices\AppleTypeServicesF65539 RAW
+\f1\b0 \AppleTypeServices\AppleTypeServicesF65539  para el proceso historico.\cb1 \
+\pard\pardeftab720\partightenfactor0
+\AppleTypeServices \cf2 \
+
+\f3 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb3 Validacion\
+\
+Validaciones para datos hist\'f3ricos
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb1 \
+\cb3 11-) En el que se valida que la tabla contenga los siguientes campos y el tipo de dato sea correcto para el proceso hist\'f3rico.:\
+\
+\
+
+\f0\i\b \AppleTypeServices\AppleTypeServicesF65539 Validacion;\
+\
+\
+
+\f1\i0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+}
