@@ -5,9 +5,6 @@ import re
 from io import StringIO, BytesIO
 import time
 
-
-
-
 # Funciones para extraer prefijo, sufijo y fecha
 def extraer_prefijo(nombre_archivo):
     return re.split(r'[-_]', nombre_archivo)[0]
@@ -42,12 +39,18 @@ def validar_archivo_nombre(archivo):
     
     return prefijo, sufijo, fecha
 
-# Función para mostrar el número de registros y columnas
-def mostrar_info_dataframe(df, nombre_archivo):
-    num_filas = df.shape[0]
-    num_columnas = df.shape[1]
-    st.write(f"Archivo: {nombre_archivo} | Registros: {num_filas} | Columnas: {num_columnas}")
-    return num_filas, num_columnas
+# Inicialización del estado del DataFrame
+if 'original_df' not in st.session_state:
+    st.session_state.original_df = None
+if 'final_df' not in st.session_state:
+    st.session_state.final_df = None
+if 'df_seleccionado' not in st.session_state:
+    st.session_state.df_seleccionado = None
+if 'columnas_seleccionadas' not in st.session_state:
+    st.session_state.columnas_seleccionadas = False
+
+
+
 
 # Inicialización del estado del DataFrame
 if 'original_df' not in st.session_state:
@@ -94,6 +97,7 @@ if 'montos_en_cero' not in st.session_state:
 if 'fecha_usuario' not in st.session_state:
     st.session_state.fecha_usuario = False
 
+
 # Configuración de la página de Streamlit
 st.set_page_config(page_title="TestDataLab", layout="wide")
 
@@ -101,9 +105,13 @@ st.set_page_config(page_title="TestDataLab", layout="wide")
 st.header("TestDataLab")
 archivos_subidos = st.file_uploader("Sube uno o varios archivos de datos (CSV, Parquet, JSON, Excel):", type=["csv", "parquet", "json", "xlsx"], accept_multiple_files=True)
 
-# Validación y carga de archivos subidos
-if archivos_subidos:
-    formatos_aceptados = ['csv', 'parquet', 'json', 'xlsx']
+# Mostrar opciones solo cuando se carga un archivo por primera vez
+if archivos_subidos and st.session_state.original_df is None:
+    # Listas de opciones para encoding, delimitador y decimales
+    encodings = ['utf-8', 'latin1', 'ascii', 'utf-16']
+    delimitadores = [',', ';', '|', '\t']
+    decimales = ['.', ',']
+
     nombres_archivos = [archivo.name for archivo in archivos_subidos]
     
     # Mostrar la lista de archivos subidos y permitir seleccionar uno para trabajar
@@ -115,29 +123,61 @@ if archivos_subidos:
         prefijo, sufijo, fecha = validar_archivo_nombre(archivo)
         file_type = archivo.name.split('.')[-1]
 
-        # Cargar el archivo seleccionado en un DataFrame
+        # Opciones adicionales para la carga de archivos CSV
         if file_type == 'csv':
-            st.session_state.original_df = pd.read_csv(archivo, low_memory=False)
+            delimitador = st.selectbox("Selecciona el delimitador del archivo CSV:", delimitadores)
+            encoding = st.selectbox("Selecciona el encoding:", encodings)
+            decimal = st.selectbox("Selecciona el símbolo decimal:", decimales)
+            try:
+                st.session_state.original_df = pd.read_csv(archivo, delimiter=delimitador, encoding=encoding, decimal=decimal, low_memory=False)
+            except Exception as e:
+                st.error(f"Error al cargar el archivo CSV: {str(e)}")
         elif file_type == 'xlsx':
-            st.session_state.original_df = pd.read_excel(archivo)
+            try:
+                st.session_state.original_df = pd.read_excel(archivo)
+            except Exception as e:
+                st.error(f"Error al cargar el archivo Excel: {str(e)}")
         elif file_type == 'json':
-            st.session_state.original_df = pd.read_json(archivo)
+            try:
+                st.session_state.original_df = pd.read_json(archivo)
+            except Exception as e:
+                st.error(f"Error al cargar el archivo JSON: {str(e)}")
         elif file_type == 'parquet':
-            st.session_state.original_df = pd.read_parquet(archivo)
+            try:
+                st.session_state.original_df = pd.read_parquet(archivo)
+            except Exception as e:
+                st.error(f"Error al cargar el archivo Parquet: {str(e)}")
 
         # Inicializar el DataFrame final si aún no está definido
         if st.session_state.final_df is None or st.session_state.final_df.empty:
             st.session_state.final_df = st.session_state.original_df.copy()
-            st.session_state.final_df2 = st.session_state.original_df.copy()
-        # Mostrar información del DataFrame
-            with st.spinner('Se esta Cargando el Archivo'):
-             time.sleep(5)
-             mostrar_info_dataframe(st.session_state.original_df, archivo_seleccionado)
-             st.success('Puedes ver el archivo en Tabla Original')
-             with st.expander("Tabla Orginal"):
-              st.dataframe(st.session_state.final_df2)
+            with st.spinner('Se está Cargando el Archivo'):
+                time.sleep(5)
+                st.success('Puedes ver y seleccionar columnas del archivo cargado')
+                st.dataframe(st.session_state.final_df)
+
+# Si el usuario selecciona columnas, las almacenamos en session_state
+if st.session_state.original_df is not None:
+    with st.expander("Seleccionar columnas"):
+        lista_columnas = st.text_input("Introduce una lista de columnas separadas por comas (ejemplo: columna1, columna2, columna3):")
+        if lista_columnas:
+            columnas = [col.strip() for col in lista_columnas.split(',')]
+            columnas_validas = [col for col in columnas if col in st.session_state.final_df.columns]
+            columnas_invalidas = [col for col in columnas if col not in st.session_state.final_df.columns]
+
+            if columnas_invalidas:
+                st.error(f"Las siguientes columnas no existen en el DataFrame: {', '.join(columnas_invalidas)}")
             
-        #st.dataframe(st.session_state.final_df)
+            if columnas_validas:
+                df_seleccionado = st.session_state.final_df[columnas_validas]
+                st.write(f"Columnas seleccionadas: {', '.join(columnas_validas)}")
+                st.session_state.df_seleccionado = df_seleccionado
+                st.session_state.columnas_seleccionadas = True
+
+# Mostrar DataFrame seleccionado si se han seleccionado columnas
+if st.session_state.columnas_seleccionadas:
+    st.write("### DataFrame Seleccionado")
+    st.dataframe(st.session_state.df_seleccionado)
 
 # Sidebar con opciones de transformación y validaciones de archivo
 with st.sidebar:
@@ -145,12 +185,12 @@ with st.sidebar:
     
     st.header("Modificación de Datos:")
     uppercase_option = st.checkbox("Ingresar Mayúsculas")
-    parse_data_option = st.checkbox("Datos Parceados",value=st.session_state.datos_parceados)
+    parse_data_option = st.checkbox("Datos Parceados")
     null_values_option = st.checkbox("Valores Nulos")
     special_characters_option = st.checkbox("Agregar Caracteres especiales")
-    montos_negativos = st.checkbox("Procesar Montos Negativos", value=st.session_state.montos_negativos)
-    montos_en_cero = st.checkbox("Procesar Montos en Cero", value=st.session_state.montos_en_cero)
-    fecha_usuario = st.checkbox("Ingresa una Fecha", value=st.session_state.fecha_usuario)
+    montos_negativos = st.checkbox("Procesar Montos Negativos")
+    montos_en_cero = st.checkbox("Procesar Montos en Cero")
+    fecha_usuario = st.checkbox("Ingresa una Fecha")
     
     st.header("Eliminación de Datos:")
     delete_column_option = st.checkbox("Borrar columna")
@@ -159,10 +199,10 @@ with st.sidebar:
     validate_schema_option = st.checkbox("Validar el Esquema")
     data_quantity_option = st.checkbox("Cantidad de Datos")
     data_validation_option = st.checkbox("Validación de la Data")
-    Nombre_Columnas = st.checkbox("Nombre de las Columnas")
-    Orden_Columnas = st.checkbox("Orden de las Columnas")
-    Tipo_Dato =  st.checkbox("Validación tipo de Datos en la Tabla")
-    Valores_Permitidos =  st.checkbox("Valores Permitidos (Nulos, Caracteres especiales, Duplicados)") 
+    nombre_columnas = st.checkbox("Nombre de las Columnas")
+    orden_columnas = st.checkbox("Orden de las Columnas")
+    tipo_dato = st.checkbox("Validación tipo de Datos en la Tabla")
+    valores_permitidos = st.checkbox("Valores Permitidos (Nulos, Caracteres especiales, Duplicados)")
     
     st.title("Opciones de Guardado")
     guardar_csv = st.checkbox("Guardar como CSV")
@@ -170,32 +210,43 @@ with st.sidebar:
     guardar_json = st.checkbox("Guardar como JSON")
     guardar_parquet = st.checkbox("Guardar como Parquet")
     nombre_archivo = st.text_input("Nombre del archivo:", value="datos_modificados")
-    
 
-
-
-# Funciones de transformación
-
+# Funciones de transformación y validaciones adicionales
 
 def procesar_montos_negativos(df, column_name):
-    df[column_name] = df[column_name].apply(lambda x: -abs(x))
-    return df.head(10)
+    try:
+        df[column_name] = df[column_name].apply(lambda x: -abs(x))
+    except Exception as e:
+        st.error(f"Error al procesar montos negativos: {str(e)}")
+    return df
 
 def procesar_montos_en_cero(df, column_name):
-    df[column_name] = 0
-    return df.head(10)
+    try:
+        df[column_name] = 0
+    except Exception as e:
+        st.error(f"Error al procesar montos en cero: {str(e)}")
+    return df
 
 def aplicar_fecha_usuario(df, column_name, fecha):
-    df[column_name] = fecha
-    return df.head(10)
+    try:
+        df[column_name] = fecha
+    except Exception as e:
+        st.error(f"Error al aplicar fecha: {str(e)}")
+    return df
 
 def add_timestamp_column(df, column_name='TIMESTAMP'):
-    df[column_name] = datetime.now()
-    return df.head(10)
+    try:
+        df[column_name] = datetime.now()
+    except Exception as e:
+        st.error(f"Error al agregar timestamp: {str(e)}")
+    return df
 
 def uppercase_column_names(df):
-    df.columns = [col.upper() for col in df.columns]
-    return df.head(10)
+    try:
+        df.columns = [col.upper() for col in df.columns]
+    except Exception as e:
+        st.error(f"Error al convertir nombres a mayúsculas: {str(e)}")
+    return df
 
 def valores_nulos(df, column_name):
     if column_name not in df.columns:
@@ -203,23 +254,29 @@ def valores_nulos(df, column_name):
         return df
     new_value = ' '
     df[column_name] = new_value
-    return df.head(10)
+    return df
+    
 
 def agregar_caracteres_especiales(df, column_name):
-    if column_name not in df.columns:
-        st.error(f"La columna '{column_name}' no existe en el DataFrame.")
-        return df
-    df[column_name] = df[column_name].astype(str) + " @!"
-    return df.head(10)
+    try:
+        if column_name not in df.columns:
+            raise ValueError(f"La columna '{column_name}' no existe en el DataFrame.")
+        df[column_name] = df[column_name].astype(str) + " @!"
+    except Exception as e:
+        st.error(f"Error al agregar caracteres especiales: {str(e)}")
+    return df
 
 def borrar_columna(df, column_name):
-    if column_name not in df.columns:
-        st.error(f"La columna '{column_name}' no existe en el DataFrame.")
-        return df
-    X = df.drop(columns=[column_name],inplace=True)
-    return X
+    try:
+        if column_name not in df.columns:
+            raise ValueError(f"La columna '{column_name}' no existe en el DataFrame.")
+        df.drop(columns=[column_name], inplace=True)
+    except Exception as e:
+        st.error(f"Error al borrar columna: {str(e)}")
+    return df
 
 # Aplicación de transformaciones inmediatas
+
 if st.session_state.df_seleccionado is not None:
     
     # Procesar Mayúsculas
@@ -301,64 +358,34 @@ if st.session_state.df_seleccionado is not None:
             if st.button("Mantener Cambios (fechausuario)"): 
                 st.session_state.final_df = temp_df.copy()
     
-    
-   
-# Si el usuario selecciona columnas, las almacenamos en session_state
-with st.expander("Seleccionar columnas"):
- 
- lista_columnas = st.text_input("Introduce una lista de columnas separadas por comas (ejemplo: columna1, columna2, columna3):")
- if lista_columnas:
-     columnas = [col.strip() for col in lista_columnas.split(',')]
-     columnas_validas = [col for col in columnas if col in st.session_state.final_df.columns]
-     columnas_invalidas = [col for col in columnas if col not in st.session_state.final_df.columns]
-
-     if columnas_invalidas:
-         st.error(f"Las siguientes columnas no existen en el DataFrame: {', '.join(columnas_invalidas)}")
-    
-     if columnas_validas:
-         df_seleccionado = st.session_state.final_df[columnas_validas]
-         st.write(f"Columnas seleccionadas: {', '.join(columnas_validas)}")
-         st.session_state.df_seleccionado = df_seleccionado  # Guardar en session_state
-         st.session_state.lista_columnas = " " 
-         st.session_state.final_df2 = False
-        
-        
-
-# Mostrar DataFrame final si está disponible
+# Guardar archivos en diferentes formatos
 if st.session_state.df_seleccionado is not None:
-    st.write("### DataFrame final después de la selección:")
-    st.dataframe(st.session_state.df_seleccionado)
-    
-    if guardar_excel:
-        excel = BytesIO()
-        with pd.ExcelWriter(excel, engine='xlsxwriter') as writer:
-            st.session_state.df_seleccionado.to_excel(writer, index=False)
-            excel.seek(0)
-            st.download_button("Descargar Excel", excel.getvalue(), f"{nombre_archivo}.xlsx")
-            
     if guardar_csv:
         csv = StringIO()
         st.session_state.df_seleccionado.to_csv(csv, index=False)
         csv.seek(0)
         st.download_button("Descargar CSV", csv.getvalue(), f"{nombre_archivo}.csv")
 
-    
+    if guardar_excel:
+        excel = BytesIO()
+        with pd.ExcelWriter(excel, engine='xlsxwriter') as writer:
+            st.session_state.df_seleccionado.to_excel(writer, index=False)
+            excel.seek(0)
+        st.download_button("Descargar Excel", excel.getvalue(), f"{nombre_archivo}.xlsx")
+
+    if guardar_json:
+        json_data = st.session_state.df_seleccionado.to_json(orient='records')
+        st.download_button("Descargar JSON", json_data, f"{nombre_archivo}.json")
+
+    if guardar_parquet:
+        parquet_buffer = BytesIO()
+        st.session_state.df_seleccionado.to_parquet(parquet_buffer, index=False)
+        st.download_button("Descargar Parquet", parquet_buffer.getvalue(), f"{nombre_archivo}.parquet")
+
 if st.button("Finalizar y Limpiar"):
-        st.session_state.final_df = None
-        st.session_state.original_df = None
-        st.session_state.df_seleccionado = None
-        st.session_state.ingresar_mayusculas = False
-        st.session_state.datos_parceados = False
-        st.session_state.valores_nulos = False
-        st.session_state.caracteres_especiales = False
-        st.session_state.borrar_columna = False
-        st.session_state.validar_esquema = False
-        st.session_state.cantidad_datos = False
-        st.session_state.validacion_data = False
-        st.session_state.guardar_csv = False
-        st.session_state.guardar_excel = False
-        st.session_state.guardar_json = False
-        st.session_state.guardar_parquet = False
-        st.session_state.lista_columnas = " "  # Restablecer el filtro de columnas
-        st.success("Sesión finalizada.")
-        st.rerun()
+    st.session_state.final_df = None
+    st.session_state.original_df = None
+    st.session_state.df_seleccionado = None
+    st.session_state.columnas_seleccionadas = False
+    st.success("Sesión finalizada.")
+    st.rerun()
